@@ -23,8 +23,6 @@ class AlertsScreen extends StatelessWidget {
       builder: (context, _) {
         final items = controller.alerts;
         return MagicScaffold(
-          backdropHeight: 200,
-          backdropIntensity: 0.5,
           appBar: AppBar(
             title: Text(l10n.alerts),
             actions: [

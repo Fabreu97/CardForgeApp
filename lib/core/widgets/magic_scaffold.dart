@@ -1,35 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'magic_backdrop.dart';
 import 'magic_symbols.dart';
 
-/// Base scaffold for every screen: dark background with decoration on top.
+/// Base scaffold for every screen: dark background with the row of gold-framed
+/// symbols at the top ([MagicSymbols]).
 ///
-/// - By default the decoration is the colored orbs ([showOrbs]).
-/// - [showSymbols] adds the row of gold-framed symbols below the app bar (or
-///   below the status bar when there is no app bar). Combine it with
-///   `showOrbs: false` to replace the orbs with the symbols.
-/// - Without `appBar` (Splash, Login): the `body` fills the screen; use SafeArea.
-/// - With `appBar`: it stays transparent over the decoration and the `body`
-///   starts right below it (and below the symbols, when shown).
+/// - With `appBar`: it stays transparent, the symbols sit right below it and the
+///   `body` starts below the symbols.
+/// - Without `appBar` (Splash, Login): the symbols sit below the status bar and
+///   the `body` fills the rest; a SafeArea inside the body will not add the top
+///   space twice.
+/// - [showSymbols] can be turned off for a screen that needs the whole area.
 class MagicScaffold extends StatelessWidget {
   const MagicScaffold({
     super.key,
     required this.body,
     this.appBar,
     this.drawer,
-    this.backdropHeight = 300,
-    this.backdropIntensity = 1,
-    this.showOrbs = true,
-    this.showSymbols = false,
+    this.showSymbols = true,
   });
 
   final Widget body;
   final PreferredSizeWidget? appBar;
   final Widget? drawer;
-  final double backdropHeight;
-  final double backdropIntensity;
-  final bool showOrbs;
   final bool showSymbols;
 
   /// Space between the symbols and the content below them.
@@ -59,14 +52,6 @@ class MagicScaffold extends StatelessWidget {
       drawer: drawer,
       body: Stack(
         children: [
-          if (showOrbs)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: backdropHeight,
-              child: MagicBackdrop(intensity: backdropIntensity),
-            ),
           if (showSymbols)
             Positioned(
               top: symbolsTop,

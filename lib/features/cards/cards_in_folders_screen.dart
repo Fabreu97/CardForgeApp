@@ -62,8 +62,6 @@ class _CardsInFoldersScreenState extends State<CardsInFoldersScreen> {
     final l10n = context.l10n;
 
     return MagicScaffold(
-      showOrbs: false,
-      showSymbols: true,
       appBar: AppBar(title: Text(l10n.menuCardsInFolders)),
       body: Column(
         children: [

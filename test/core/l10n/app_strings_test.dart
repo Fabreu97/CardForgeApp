@@ -5,6 +5,7 @@ import 'package:cardforge/core/l10n/strings_pt.dart';
 import 'package:cardforge/features/alerts/machine_alert.dart';
 import 'package:cardforge/features/auth/auth_service.dart';
 import 'package:cardforge/features/cards/card_models.dart';
+import 'package:cardforge/features/control/control_models.dart';
 import 'package:cardforge/features/machine/machine_models.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,6 +51,13 @@ void main() {
         }
         for (final failure in CardsFailure.values) {
           expect(strings.cardsFailure(failure), isNotEmpty, reason: '$failure');
+        }
+        for (final state in MachineRunState.values) {
+          expect(strings.runStateLabel(state), isNotEmpty, reason: '$state');
+          expect(strings.runStateHint(state), isNotEmpty, reason: '$state');
+        }
+        for (final failure in MachineControlFailure.values) {
+          expect(strings.controlFailure(failure), isNotEmpty, reason: '$failure');
         }
         for (final step in LinkStep.values) {
           expect(strings.linkStep(step), isNotEmpty, reason: '$step');

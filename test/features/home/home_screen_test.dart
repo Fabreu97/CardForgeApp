@@ -52,6 +52,30 @@ void main() {
     expect(find.text('No machine linked'), findsNothing);
   });
 
+  testWidgets('"Link machine" is the first item of the side menu',
+      (tester) async {
+    await pumpApp(tester, initialLocation: '/home');
+    await openDrawer(tester);
+
+    final linkY = tester.getTopLeft(inDrawer('Link machine')).dy;
+    for (final other in _menuItems.where((i) => i != 'Link machine')) {
+      expect(linkY, lessThan(tester.getTopLeft(inDrawer(other)).dy),
+          reason: 'Link machine should come before $other');
+    }
+  });
+
+  testWidgets('"Machine control" in the menu opens the control screen',
+      (tester) async {
+    await pumpApp(tester, initialLocation: '/home');
+    await openDrawer(tester);
+
+    await tester.tap(inDrawer('Machine control'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Start/Resume'), findsOneWidget);
+    expect(find.text('Stop'), findsOneWidget);
+  });
+
   testWidgets('the side menu lists every planned screen', (tester) async {
     await pumpApp(tester, initialLocation: '/home');
     await openDrawer(tester);

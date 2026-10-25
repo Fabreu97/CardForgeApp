@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/alerts/alerts_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/cards/cards_in_folders_screen.dart';
+import '../../features/control/machine_control_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/machine/link_machine_screen.dart';
 import '../../features/settings/settings_screen.dart';
@@ -31,6 +32,7 @@ GoRouter createAppRouter({
       ),
       GoRoute(path: '/alerts', builder: (_, __) => const AlertsScreen()),
       GoRoute(path: '/cards', builder: (_, __) => const CardsInFoldersScreen()),
+      GoRoute(path: '/control', builder: (_, __) => const MachineControlScreen()),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     ],
   );

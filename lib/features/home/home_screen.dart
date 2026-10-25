@@ -23,8 +23,6 @@ class HomeScreen extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return MagicScaffold(
-      backdropHeight: 240,
-      backdropIntensity: 0.6,
       appBar: AppBar(
         title: const Text('CARDFORGE'),
         actions: [
@@ -114,11 +112,11 @@ class _HomeDrawer extends StatelessWidget {
 
     // (icon, label, route). A null route means "not built yet".
     final items = <(IconData, String, String?)>[
-      (Icons.precision_manufacturing_outlined, l10n.menuMachineControl, null),
+      (Icons.link_rounded, l10n.linkMachine, '/link-machine'),
+      (Icons.precision_manufacturing_outlined, l10n.menuMachineControl, '/control'),
       (Icons.folder_copy_outlined, l10n.menuCardsInFolders, '/cards'),
       (Icons.table_chart_outlined, l10n.menuCsvReport, null),
       (Icons.rule_folder_outlined, l10n.menuSortingRules, null),
-      (Icons.link_rounded, l10n.linkMachine, '/link-machine'),
       (Icons.notifications_outlined, l10n.alerts, '/alerts'),
       (Icons.settings_outlined, l10n.settings, '/settings'),
     ];

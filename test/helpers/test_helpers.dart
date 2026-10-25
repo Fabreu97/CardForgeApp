@@ -4,6 +4,8 @@ import 'package:cardforge/core/services/server_health_service.dart';
 import 'package:cardforge/features/auth/auth_service.dart';
 import 'package:cardforge/features/cards/card_repository.dart';
 import 'package:cardforge/features/cards/mock_card_repository.dart';
+import 'package:cardforge/features/control/machine_control_service.dart';
+import 'package:cardforge/features/control/mock_machine_control_service.dart';
 import 'package:cardforge/features/machine/machine_link_service.dart';
 import 'package:cardforge/features/machine/mock_machine_link_service.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +35,14 @@ Future<void> resetAuthState({Map<String, String> stored = const {}}) async {
 /// - [preferences]: starting SharedPreferences, e.g. `{'language_code': 'pt'}`.
 /// - [linkService]: the Bluetooth service (a fast simulated one by default).
 /// - [cardRepository]: where the cards come from (a fast simulated one by default).
+/// - [machineControl]: the Start/Stop service (a fast simulated one by default).
 Future<AppDependencies> pumpApp(
   WidgetTester tester, {
   String initialLocation = '/splash',
   ServerHealthService? healthService,
   MachineLinkService? linkService,
   CardRepository? cardRepository,
+  MachineControlService? machineControl,
   Map<String, Object> preferences = const {},
 }) async {
   tester.view.physicalSize = const Size(1170, 2532);
@@ -52,6 +56,8 @@ Future<AppDependencies> pumpApp(
     linkService: linkService ?? MockMachineLinkService(stepDelay: Duration.zero),
     cardRepository:
         cardRepository ?? MockCardRepository(latency: Duration.zero),
+    machineControl:
+        machineControl ?? MockMachineControlService(latency: Duration.zero),
   );
 
   await tester.pumpWidget(

@@ -1,4 +1,3 @@
-import 'package:cardforge/core/widgets/magic_backdrop.dart';
 import 'package:cardforge/core/widgets/magic_panel.dart';
 import 'package:cardforge/features/cards/card_models.dart';
 import 'package:cardforge/features/cards/card_repository.dart';
@@ -62,12 +61,11 @@ void main() {
     expect(inTile('Birds of Paradise', '×2'), findsOneWidget);
   });
 
-  testWidgets('shows the symbols at the top instead of the colored circles',
+  testWidgets('shows the symbols at the top, above the search bar',
       (tester) async {
     await openCards(tester);
 
     expect(find.byKey(const ValueKey('mana-symbols')), findsOneWidget);
-    expect(find.byType(MagicBackdrop), findsNothing);
     // The search bar sits below the symbols.
     final symbolsBottom =
         tester.getRect(find.byKey(const ValueKey('mana-symbols'))).bottom;

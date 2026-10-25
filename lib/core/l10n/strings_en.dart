@@ -1,6 +1,7 @@
 import '../../features/alerts/machine_alert.dart';
 import '../../features/auth/auth_service.dart';
 import '../../features/cards/card_models.dart';
+import '../../features/control/control_models.dart';
 import '../../features/machine/machine_models.dart';
 import 'app_strings.dart';
 
@@ -236,6 +237,40 @@ class EnStrings extends AppStrings {
       };
   @override
   String get signInAgain => 'Sign in again';
+
+  // Machine control
+  @override
+  String get startResume => 'Start/Resume';
+  @override
+  String get stop => 'Stop';
+  @override
+  String get checkingMachine => 'Checking the machine…';
+  @override
+  String get controlLoadFailedTitle => 'Could not get the machine status';
+  @override
+  String runStateLabel(MachineRunState state) => switch (state) {
+        MachineRunState.idle => 'Ready',
+        MachineRunState.running => 'Running',
+        MachineRunState.stopped => 'Stopped',
+      };
+  @override
+  String runStateHint(MachineRunState state) => switch (state) {
+        MachineRunState.idle => 'Ready to start sorting.',
+        MachineRunState.running => 'Sorting cards…',
+        MachineRunState.stopped =>
+          'Sorting is stopped. Tap Start/Resume to continue.',
+      };
+  @override
+  String controlFailure(MachineControlFailure failure) => switch (failure) {
+        MachineControlFailure.unauthorized =>
+          'Your session expired. Please sign in again.',
+        MachineControlFailure.serverUnreachable =>
+          'Cannot reach the server. Check your connection and try again.',
+        MachineControlFailure.machineOffline =>
+          'The machine is offline. Check that it is on and connected to Wi-Fi.',
+        MachineControlFailure.serverError =>
+          'The server had a problem. Please try again.',
+      };
 
   // Settings
   @override

@@ -7,8 +7,8 @@ The physical machine holds a stack of cards, pulls one at a time with a roller,
 identifies it with a camera and drops it in the right folder according to the
 sorting rule defined in the app. CardForge is the control panel for that machine.
 
-> **Status:** early development. Splash, authentication, machine linking, alerts,
-> cards in folders and settings are in place. The remaining screens are listed in the
+> **Status:** early development. Splash, authentication, machine linking, machine control,
+> alerts, cards in folders and settings are in place. The remaining screens are listed in the
 > [roadmap](#roadmap). Bluetooth runs against a simulated machine until the real
 > transport is built (see [Machine linking](#machine-linking)).
 
@@ -21,11 +21,12 @@ sorting rule defined in the app. CardForge is the control panel for that machine
 | Home | `/home` | Shows the linked machine (or a **Link machine** button), the alerts bell with an unread badge and the side menu. |
 | Link machine | `/link-machine` | Wizard: Bluetooth scan, pick a machine, machine password, optional Wi-Fi details, wait for the machine to confirm. |
 | Alerts | `/alerts` | Every event reported by the machine, newest first. Tap to mark as read, or mark/clear all. |
+| Machine control | `/control` | Two big buttons, **Start/Resume** and **Stop**, plus the machine's state (Ready, Running, Stopped). Commands go to the server. |
 | Cards in folders | `/cards` | Search a card by name and see which folders (1 to 6) it is in; with nothing typed, lists the cards in the folders. Data comes from the server. |
 | Settings | `/settings` | Language (English or Portuguese) and, in debug builds only, a tool to simulate alerts. |
 
-Side-menu items that do not have a screen yet (machine control, CSV report,
-sorting rules) show a "coming soon" message.
+Side-menu items that do not have a screen yet (CSV report, sorting rules) show a "coming soon" message. **Link machine** is the
+first item of the side menu.
 
 ### Navigation flow
 
@@ -145,6 +146,35 @@ out to list every card; the request carries `Authorization: Bearer <token>`):
 `total` is the number of cards that match, not the size of the page. Folder
 numbers outside 1 to 6 are ignored.
 
+## Machine control
+
+Two big buttons, **Start/Resume** and **Stop**, and the machine's state
+(**Ready**, **Running** or **Stopped**).
+
+- **Start/Resume** is available when the machine is ready or stopped, and starts a
+  run or continues a stopped one. **Stop** is available while it is running and
+  halts the machine.
+- While a command is being sent both buttons are disabled and the pressed one
+  shows a spinner. The state shown is always the one the server confirmed.
+- On entering the screen the app asks the server for the current state, so it is
+  right even if the run was started earlier or from another phone.
+- Errors: machine offline (the server answers `409`), no connection, server
+  problem, or an expired session (**Sign in again**).
+- Without a linked machine the buttons are off and **Link machine** is one tap
+  away.
+
+With the simulated backend (the default) the machine remembers its state while the
+app is open.
+
+Server routes (each answers `200` with `{"state": "idle" | "running" |
+"stopped"}`; `401` = session expired, `409` = machine offline):
+
+```
+GET  /machines/{id}/status
+POST /machines/{id}/start
+POST /machines/{id}/stop
+```
+
 ## Requirements
 
 - Flutter **3.22 or newer** (Dart 3.4+)
@@ -188,6 +218,9 @@ They are read in `lib/core/config/app_config.dart`.
 | `POST /auth/login` | `{"identifier": "...", "password": "..."}` | `200` with `{"access_token": "..."}`, or `401` for invalid credentials |
 | `POST /auth/google` | `{"id_token": "..."}` | `200` with `{"access_token": "..."}`; the backend validates the Google token |
 | `GET /cards?query=&limit=&offset=` | n/a | `200` with `{"items": [...], "total": N}` (see [Cards in folders](#cards-in-folders)); `401` if the token is invalid |
+| `GET /machines/{id}/status` | n/a | `200` with `{"state": "idle" \| "running" \| "stopped"}` (see [Machine control](#machine-control)) |
+| `POST /machines/{id}/start` | n/a | Same answer, with the new state; `409` if the machine is offline |
+| `POST /machines/{id}/stop` | n/a | Same answer, with the new state |
 
 The token is kept in the device's secure storage (`flutter_secure_storage`). With
 **Remember me** unchecked, the session lasts only until the app is closed.
@@ -247,6 +280,7 @@ lib/
     ├── settings/
     ├── alerts/                       Model, controller, banner style, screen
     ├── cards/                        Models, repository (API + mock), controller, screen
+    ├── control/                      Start/Stop service (API + mock), controller, screen
     └── machine/                      Models, service interface, mock, flow, screen
 
 assets/images/                        mana_symbols.png (transparent background)
@@ -258,7 +292,7 @@ Each screen lives in a folder under `features/`; anything shared lives in `core/
 
 ## Design system
 
-Dark theme with a gold frame, colored orbs at the top and **Cinzel** headings
+Dark theme with a gold frame, the gold-framed symbols at the top and **Cinzel** headings
 (through `google_fonts`; the font is downloaded the first time, so it needs
 internet). There are no mana symbols or official game art, only generic fantasy
 elements.
@@ -274,16 +308,15 @@ elements.
 
 Always use `MagicColors` and `Theme.of(context)`; no loose colors in screens.
 
-- **`MagicScaffold`:** base of every screen, with the dark background and orbs.
+- **`MagicScaffold`:** base of every screen, with the dark background and the
+  symbols row below the app bar.
   Accepts a transparent `appBar` and a `drawer`.
 - **`MagicPanel`:** dark purple panel with a gold border, to group content.
 - **`MagicWordmark`:** the "CARDFORGE" title.
 - **`CardEmblem`:** the fanned cards.
-- **`MagicBackdrop`:** the orbs, with adjustable intensity.
 - **`MagicSymbols`:** the row of five gold-framed symbols (sun, drop, skull, flame,
-  tree), a PNG with a transparent background in `assets/images/`. Turn it on with
-  `MagicScaffold(showSymbols: true)`; add `showOrbs: false` to replace the orbs.
-  Today only **Cards in folders** uses it.
+  tree), a PNG with a transparent background in `assets/images/`. Every
+  `MagicScaffold` shows it below the app bar; pass `showSymbols: false` to hide it.
 
 ## Creating a new screen
 
@@ -312,6 +345,7 @@ internet.
 | `features/home` | Linked or not, side menu, bell badge, sign out |
 | `features/machine` | Linking state machine (including timeout and errors), the screen end to end, saved machine |
 | `features/alerts` | Controller, list, read state, banner |
+| `features/control` | Start/Resume and Stop rules, API and simulated services, the screen |
 | `features/cards` | Models, API and simulated repositories, search/paging controller, the screen |
 | `features/settings` | Language switch and persistence, alert simulator |
 | `core/l10n` | Every enum value has text in both languages; language persistence |
@@ -330,7 +364,8 @@ Use `pumpApp(tester, initialLocation: '/route')` to open a screen. Options:
 - [x] Alerts: banner and alerts screen
 - [x] Automated tests
 - [ ] Real Bluetooth transport (needs the machine's protocol)
-- [ ] Machine control (Start, Pause, Resume, Stop, progress)
+- [x] Machine control: Start/Resume and Stop
+- [ ] Machine progress and a Pause command
 - [x] Cards in folders (search and list from the server)
 - [ ] CSV report
 - [ ] Sorting rules

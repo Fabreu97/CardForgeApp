@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 4),
                     const Center(child: CardEmblem()),
                     const SizedBox(height: 20),
                     const MagicWordmark(),

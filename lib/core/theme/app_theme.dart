@@ -12,13 +12,6 @@ class MagicColors {
   static const Color parchment = Color(0xFFF3E6C4);
   static const Color parchmentMuted = Color(0xB3F3E6C4); // parchment at 70%
   static const Color danger = Color(0xFFE5645A);
-
-  // Decorative orbs (an abstract nod to Magic's five colors)
-  static const Color orbWhite = Color(0x55F2E8C9);
-  static const Color orbBlue = Color(0x662F6FDB);
-  static const Color orbBlack = Color(0x665B4B6B);
-  static const Color orbRed = Color(0x66D64532);
-  static const Color orbGreen = Color(0x662E9E5B);
 }
 
 class AppTheme {

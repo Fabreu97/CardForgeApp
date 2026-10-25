@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../core/api/api_contract.dart';
 import '../../core/config/app_config.dart';
 import '../auth/auth_service.dart';
 import 'card_models.dart';
@@ -41,26 +42,26 @@ class ApiCardRepository implements CardRepository {
     int limit = 30,
   }) async {
     final token = await _tokenProvider();
-    final uri = Uri.parse('$_baseUrl/cards').replace(queryParameters: {
-      if (query.isNotEmpty) 'query': query,
-      'limit': '$limit',
-      'offset': '$offset',
+    final uri = Uri.parse('$_baseUrl${ApiRoutes.cards}').replace(queryParameters: {
+      if (query.isNotEmpty) ApiQuery.search: query,
+      ApiQuery.limit: '$limit',
+      ApiQuery.offset: '$offset',
     });
 
     final http.Response res;
     try {
       res = await _client.get(uri, headers: {
         'Accept': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
+        if (token != null) ApiHeaders.authorization: ApiHeaders.bearer(token),
       }).timeout(AppConfig.requestTimeout);
     } on Exception {
       throw const CardsException(CardsFailure.serverUnreachable);
     }
 
-    if (res.statusCode == 401) {
+    if (res.statusCode == ApiStatus.unauthorized) {
       throw const CardsException(CardsFailure.unauthorized);
     }
-    if (res.statusCode != 200) {
+    if (res.statusCode != ApiStatus.ok) {
       throw const CardsException(CardsFailure.serverError);
     }
 

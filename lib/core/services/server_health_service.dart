@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../api/api_contract.dart';
 import '../config/app_config.dart';
 
 /// Checks whether the CardForge server is reachable (GET /health).
@@ -11,7 +12,7 @@ class ServerHealthService {
     }
     try {
       final res = await http
-          .get(Uri.parse('${AppConfig.apiBaseUrl}/health'))
+          .get(Uri.parse('${AppConfig.apiBaseUrl}${ApiRoutes.health}'))
           .timeout(AppConfig.healthTimeout);
       return res.statusCode == 200;
     } on Exception {

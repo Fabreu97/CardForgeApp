@@ -1,6 +1,7 @@
 import '../../features/alerts/machine_alert.dart';
 import '../../features/auth/auth_service.dart';
 import '../../features/cards/card_models.dart';
+import '../../features/control/control_models.dart';
 import '../../features/machine/machine_models.dart';
 import 'app_strings.dart';
 
@@ -235,6 +236,41 @@ class PtStrings extends AppStrings {
       };
   @override
   String get signInAgain => 'Entrar novamente';
+
+  // Machine control
+  @override
+  String get startResume => 'Iniciar/Continuar';
+  @override
+  String get stop => 'Parar';
+  @override
+  String get checkingMachine => 'Verificando a máquina…';
+  @override
+  String get controlLoadFailedTitle =>
+      'Não foi possível obter o status da máquina';
+  @override
+  String runStateLabel(MachineRunState state) => switch (state) {
+        MachineRunState.idle => 'Pronta',
+        MachineRunState.running => 'Em execução',
+        MachineRunState.stopped => 'Parada',
+      };
+  @override
+  String runStateHint(MachineRunState state) => switch (state) {
+        MachineRunState.idle => 'Pronta para iniciar a ordenação.',
+        MachineRunState.running => 'Ordenando as cartas…',
+        MachineRunState.stopped =>
+          'Ordenação parada. Toque em Iniciar/Continuar para continuar.',
+      };
+  @override
+  String controlFailure(MachineControlFailure failure) => switch (failure) {
+        MachineControlFailure.unauthorized =>
+          'Sua sessão expirou. Entre novamente.',
+        MachineControlFailure.serverUnreachable =>
+          'Sem conexão com o servidor. Verifique sua internet e tente de novo.',
+        MachineControlFailure.machineOffline =>
+          'A máquina está offline. Confira se está ligada e conectada ao Wi-Fi.',
+        MachineControlFailure.serverError =>
+          'O servidor teve um problema. Tente novamente.',
+      };
 
   // Settings
   @override

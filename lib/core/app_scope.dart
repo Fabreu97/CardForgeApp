@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../features/alerts/alerts_controller.dart';
 import '../features/cards/card_repository.dart';
 import '../features/cards/mock_card_repository.dart';
+import '../features/control/api_machine_control_service.dart';
+import '../features/control/machine_control_service.dart';
+import '../features/control/mock_machine_control_service.dart';
 import '../features/machine/machine_link_service.dart';
 import '../features/machine/machine_store.dart';
 import '../features/machine/mock_machine_link_service.dart';
@@ -18,6 +21,7 @@ class AppDependencies {
     required this.machineStore,
     required this.linkService,
     required this.cardRepository,
+    required this.machineControl,
     GlobalKey<ScaffoldMessengerState>? messengerKey,
   }) : messengerKey = messengerKey ?? GlobalKey<ScaffoldMessengerState>();
 
@@ -25,6 +29,7 @@ class AppDependencies {
     SharedPreferences prefs, {
     MachineLinkService? linkService,
     CardRepository? cardRepository,
+    MachineControlService? machineControl,
   }) {
     return AppDependencies(
       locale: LocaleController(prefs),
@@ -38,6 +43,10 @@ class AppDependencies {
           (AppConfig.useMockBackend
               ? MockCardRepository()
               : ApiCardRepository()),
+      machineControl: machineControl ??
+          (AppConfig.useMockBackend
+              ? MockMachineControlService()
+              : ApiMachineControlService()),
     );
   }
 
@@ -46,6 +55,7 @@ class AppDependencies {
   final MachineStore machineStore;
   final MachineLinkService linkService;
   final CardRepository cardRepository;
+  final MachineControlService machineControl;
 
   /// Lets the app show alert banners from anywhere, on top of any screen.
   final GlobalKey<ScaffoldMessengerState> messengerKey;

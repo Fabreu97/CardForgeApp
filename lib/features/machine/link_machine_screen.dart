@@ -66,8 +66,6 @@ class _LinkMachineScreenState extends State<LinkMachineScreen> {
         // Going back while the machine is being linked would leave it half set up.
         canPop: !_flow.isBusy,
         child: MagicScaffold(
-          backdropHeight: 220,
-          backdropIntensity: 0.5,
           appBar: AppBar(title: Text(l10n.linkMachine)),
           body: KeyedSubtree(
             key: ValueKey(_flow.phase),

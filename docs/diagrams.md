@@ -334,6 +334,35 @@ sequenceDiagram
   S-->>A: Next page
 ```
 
+## 13. Sequence: Start/Resume and Stop
+
+What the two buttons of the Machine control screen do. The screen shows the state
+the server confirms, never a guess.
+
+```mermaid
+sequenceDiagram
+  actor U as User
+  participant A as App
+  participant S as Server
+  participant M as Machine
+  U->>A: Opens Machine control
+  A->>S: GET /machines/{id}/status
+  S-->>A: state: idle, running or stopped
+  A-->>U: State and the buttons that apply
+  U->>A: Taps Start/Resume
+  A->>S: POST /machines/{id}/start
+  S->>M: Command: start or continue sorting
+  M-->>S: Running
+  S-->>A: state: running
+  A-->>U: Running, Stop enabled
+  U->>A: Taps Stop
+  A->>S: POST /machines/{id}/stop
+  S->>M: Command: stop
+  M-->>S: Stopped
+  S-->>A: state: stopped
+  A-->>U: Stopped, Start/Resume enabled
+```
+
 ## Assumptions and open points
 
 - During a run the app may talk directly to the Raspberry over local Wi-Fi, or
@@ -344,4 +373,6 @@ sequenceDiagram
 - Unidentified or face-down cards go to a folder of their own and raise an alert.
 - The inventory and the report are only available after the run finishes.
 - Losing the connection pauses the run, and the user resumes it from the app.
+- For now the app models three machine states: ready, running and stopped. Stop
+  halts the run and Start/Resume continues it; Pause and error states come later.
 - The data model in diagram 11 is an initial proposal, not yet validated.

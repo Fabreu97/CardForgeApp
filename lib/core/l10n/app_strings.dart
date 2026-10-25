@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../../features/alerts/machine_alert.dart';
 import '../../features/auth/auth_service.dart';
 import '../../features/cards/card_models.dart';
+import '../../features/control/control_models.dart';
 import '../../features/machine/machine_models.dart';
 import 'strings_en.dart';
 import 'strings_pt.dart';
@@ -122,6 +123,15 @@ abstract class AppStrings {
   String get cardsLoadFailedTitle;
   String cardsFailure(CardsFailure failure);
   String get signInAgain;
+
+  // Machine control
+  String get startResume;
+  String get stop;
+  String get checkingMachine;
+  String get controlLoadFailedTitle;
+  String runStateLabel(MachineRunState state);
+  String runStateHint(MachineRunState state);
+  String controlFailure(MachineControlFailure failure);
 
   // Settings
   String get languageSection;

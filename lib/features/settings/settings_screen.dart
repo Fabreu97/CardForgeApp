@@ -21,8 +21,6 @@ class SettingsScreen extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return MagicScaffold(
-      backdropHeight: 200,
-      backdropIntensity: 0.5,
       appBar: AppBar(title: Text(l10n.settings)),
       body: ListenableBuilder(
         listenable: deps.locale,

@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
+import '../../core/api/api_contract.dart';
 import '../../core/config/app_config.dart';
 
 /// Why a sign-in failed. The UI turns each one into a translated message.
@@ -59,9 +60,9 @@ class AuthService {
       await _persist('mock-token', remember);
       return;
     }
-    final res = await _post('/auth/login', {
-      'identifier': identifier,
-      'password': password,
+    final res = await _post(ApiRoutes.login, {
+      ApiFields.identifier: identifier,
+      ApiFields.password: password,
     });
     await _saveToken(res, remember);
   }
@@ -80,7 +81,7 @@ class AuthService {
     if (idToken == null) {
       throw const AuthException(AuthFailure.googleTokenMissing);
     }
-    final res = await _post('/auth/google', {'id_token': idToken});
+    final res = await _post(ApiRoutes.googleLogin, {ApiFields.idToken: idToken});
     await _saveToken(res, true);
   }
 
@@ -119,12 +120,12 @@ class AuthService {
   }
 
   Future<void> _saveToken(http.Response res, bool remember) async {
-    if (res.statusCode == 200) {
+    if (res.statusCode == ApiStatus.ok) {
       final data = jsonDecode(res.body) as Map<String, dynamic>;
-      await _persist(data['access_token'] as String, remember);
+      await _persist(data[ApiFields.accessToken] as String, remember);
       return;
     }
-    if (res.statusCode == 401) {
+    if (res.statusCode == ApiStatus.unauthorized) {
       throw const AuthException(AuthFailure.invalidCredentials);
     }
     throw const AuthException(AuthFailure.serverError);

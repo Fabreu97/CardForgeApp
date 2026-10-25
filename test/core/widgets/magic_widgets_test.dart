@@ -1,6 +1,5 @@
 import 'package:cardforge/core/theme/app_theme.dart';
 import 'package:cardforge/core/widgets/card_emblem.dart';
-import 'package:cardforge/core/widgets/magic_backdrop.dart';
 import 'package:cardforge/core/widgets/magic_panel.dart';
 import 'package:cardforge/core/widgets/magic_scaffold.dart';
 import 'package:cardforge/core/widgets/magic_symbols.dart';
@@ -14,72 +13,57 @@ Widget _app(Widget home) => MaterialApp(theme: AppTheme.dark(), home: home);
 void main() {
   setUpAll(() => GoogleFonts.config.allowRuntimeFetching = false);
 
+  double screenWidth(WidgetTester tester) =>
+      tester.view.physicalSize.width / tester.view.devicePixelRatio;
+
   group('MagicScaffold', () {
-    testWidgets('without an AppBar, the content starts at the top of the screen',
-        (tester) async {
+    testWidgets('without an app bar, the symbols start at the top and the body '
+        'starts below them', (tester) async {
       await tester.pumpWidget(_app(const MagicScaffold(body: Text('Body'))));
 
-      expect(find.byType(MagicBackdrop), findsOneWidget);
-      expect(tester.getTopLeft(find.text('Body')).dy, 0);
+      expect(find.byKey(const ValueKey('mana-symbols')), findsOneWidget);
+      expect(tester.getRect(find.byType(MagicSymbols)).top, 0);
+      expect(
+        tester.getTopLeft(find.text('Body')).dy,
+        closeTo(MagicSymbols.heightFor(screenWidth(tester)) + 8, 0.5),
+      );
     });
 
-    testWidgets('with an AppBar, the content starts right below it',
-        (tester) async {
+    testWidgets('with an app bar, the symbols sit right below it and the body '
+        'below the symbols', (tester) async {
       await tester.pumpWidget(_app(MagicScaffold(
         appBar: AppBar(title: const Text('Title')),
         body: const Text('Body'),
       )));
 
       expect(find.text('Title'), findsOneWidget);
-      expect(tester.getTopLeft(find.text('Body')).dy,
-          greaterThanOrEqualTo(kToolbarHeight));
-    });
-  });
-
-  group('MagicScaffold symbols', () {
-    testWidgets('are off by default and the orbs are on', (tester) async {
-      await tester.pumpWidget(_app(const MagicScaffold(body: Text('Body'))));
-
-      expect(find.byType(MagicBackdrop), findsOneWidget);
-      expect(find.byKey(const ValueKey('mana-symbols')), findsNothing);
+      expect(tester.getRect(find.byType(MagicSymbols)).top,
+          closeTo(kToolbarHeight, 0.01));
+      expect(
+        tester.getTopLeft(find.text('Body')).dy,
+        closeTo(kToolbarHeight + MagicSymbols.heightFor(screenWidth(tester)) + 8,
+            0.5),
+      );
     });
 
-    testWidgets('can replace the orbs and push the body below them',
-        (tester) async {
+    testWidgets('the symbols can be turned off', (tester) async {
       await tester.pumpWidget(_app(MagicScaffold(
         appBar: AppBar(title: const Text('Title')),
-        showOrbs: false,
-        showSymbols: true,
+        showSymbols: false,
         body: const Text('Body'),
       )));
 
-      expect(find.byType(MagicBackdrop), findsNothing);
-      expect(find.byKey(const ValueKey('mana-symbols')), findsOneWidget);
-
-      final screenWidth = tester.view.physicalSize.width / tester.view.devicePixelRatio;
-      final symbols = tester.getRect(find.byType(MagicSymbols));
-      expect(symbols.top, closeTo(kToolbarHeight, 0.01));
+      expect(find.byKey(const ValueKey('mana-symbols')), findsNothing);
       expect(tester.getTopLeft(find.text('Body')).dy,
-          closeTo(kToolbarHeight + MagicSymbols.heightFor(screenWidth) + 8, 0.5));
+          closeTo(kToolbarHeight, 0.01));
     });
+  });
 
-    testWidgets('without an app bar they start at the top of the screen',
-        (tester) async {
-      await tester.pumpWidget(_app(const MagicScaffold(
-        showOrbs: false,
-        showSymbols: true,
-        body: Text('Body'),
-      )));
-
-      expect(tester.getRect(find.byType(MagicSymbols)).top, 0);
-    });
-
-    test('the row height follows the screen width, up to a maximum', () {
-      expect(MagicSymbols.heightFor(390),
-          closeTo((390 - 48) / MagicSymbols.aspectRatio, 0.01));
-      expect(MagicSymbols.heightFor(1200),
-          closeTo(372 / MagicSymbols.aspectRatio, 0.01));
-    });
+  test('the symbols row height follows the screen width, up to a maximum', () {
+    expect(MagicSymbols.heightFor(390),
+        closeTo((390 - 48) / MagicSymbols.aspectRatio, 0.01));
+    expect(MagicSymbols.heightFor(1200),
+        closeTo(372 / MagicSymbols.aspectRatio, 0.01));
   });
 
   testWidgets('MagicPanel shows its content', (tester) async {
